@@ -1,4 +1,4 @@
-const expect = require("unexpected");
+const expect = require("unexpected").clone();
 const express = require("express");
 
 const expressception = require("../lib/expressception");
@@ -14,7 +14,10 @@ describe("expressception", () => {
     });
     const agent = expressception(app).superagent();
 
-    return expect(() => agent.post("/foo/bar").expect(201), "to be fulfilled");
+    return expect(
+      run => agent.post("/foo/bar").end(run),
+      "to call the callback without error"
+    );
   });
 
   it("should work with a middleware", () => {
@@ -23,24 +26,45 @@ describe("expressception", () => {
     };
     const agent = expressception(middleware).superagent();
 
-    return expect(() => agent.post("/foo/bar").expect(201), "to be fulfilled");
+    return expect(
+      run => agent.post("/foo/bar").end(run),
+      "to call the callback without error"
+    );
   });
 
   describe("with superagent api", () => {
+    expect.addAssertion(
+      "<object> to end with status code <number>",
+      (expect, agent, statusCode) => {
+        const p = new Promise((resolve, reject) => {
+          agent.end((err, res) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(res);
+            }
+          });
+        });
+
+        return expect(p, "to be fulfilled").then(res => {
+          if (res.status !== statusCode) {
+            throw new Error("Mismatching status code.");
+          }
+        });
+      }
+    );
+
     it("should support query", () => {
       const agent = expressception((req, res) => {
         res.status(req.query.foo === "bar" ? 200 : 400).send();
       }).superagent();
 
       return expect(
-        () =>
-          agent
-            .get("/foo/bar")
-            .query({
-              foo: "bar"
-            })
-            .expect(200),
-        "to be fulfilled"
+        agent.get("/foo/bar").query({
+          foo: "bar"
+        }),
+        "to end with status code",
+        200
       );
     });
 
@@ -54,15 +78,14 @@ describe("expressception", () => {
       ).superagent();
 
       return expect(
-        () =>
-          agent
-            .post("/foo/bar")
-            .type("json")
-            .send({
-              foo: "bar"
-            })
-            .expect(200),
-        "to be fulfilled"
+        agent
+          .post("/foo/bar")
+          .type("json")
+          .send({
+            foo: "bar"
+          }),
+        "to end with status code",
+        200
       );
     });
 
@@ -72,7 +95,7 @@ describe("expressception", () => {
       }).superagent();
 
       return expect(
-        () => agent.post("/foo/bar").expect(201),
+        () => expect(agent.post("/foo/bar"), "to end with status code", 201),
         "to be rejected with",
         "Mismatching status code."
       );
