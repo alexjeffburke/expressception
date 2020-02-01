@@ -100,5 +100,27 @@ describe("expressception", () => {
         "Mismatching status code."
       );
     });
+
+    it("should allow being used as a promise (then)", async () => {
+      const agent = expressception((req, res) => {
+        res.status(204).send();
+      }).superagent();
+
+      const res = await agent.post("/foo/bar");
+
+      return expect(res.status, "to equal", 204);
+    });
+
+    it("should allow being used as a promise (catch)", async () => {
+      const agent = expressception((req, res) => {
+        res.status(204).send();
+      }).superagent();
+
+      const res = await agent.post("/foo/bar").catch(e => {
+        throw e;
+      });
+
+      return expect(res.status, "to equal", 204);
+    });
   });
 });
