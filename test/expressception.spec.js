@@ -149,4 +149,66 @@ describe("expressception", () => {
       );
     });
   });
+
+  describe("with supertest api", () => {
+    it("should support expect(status)", () => {
+      const app = express().get("/foo/bar", (req, res) => {
+        res.status(req.query.foo === "bar" ? 200 : 400).send();
+      });
+      const agent = expressception(app).supertest();
+
+      return expect(
+        () =>
+          agent
+            .get("/foo/bar")
+            .query({
+              foo: "bar"
+            })
+            .expect(200),
+        "to be fulfilled"
+      );
+    });
+
+    it("should support expect(header)", () => {
+      const app = express().get("/foo/bar", (req, res) => {
+        res.status(req.query.foo === "bar" ? 200 : 400).send({});
+      });
+      const agent = expressception(app).supertest();
+
+      return expect(
+        () =>
+          agent
+            .get("/foo/bar")
+            .query({
+              foo: "bar"
+            })
+            .expect("Content-Type", /json/),
+        "to be fulfilled"
+      );
+    });
+
+    it("should still allow .end() if used", () => {
+      const agent = expressception((req, res) => {
+        res.status(204).send();
+      }).supertest();
+
+      return expect(
+        () => expect(agent.post("/foo/bar"), "to end with status code", 201),
+        "to be rejected with",
+        "Mismatching status code."
+      );
+    });
+
+    it("should fail on mismatched status code", () => {
+      const agent = expressception((req, res) => {
+        res.status(204).send();
+      }).supertest();
+
+      return expect(
+        () => agent.post("/foo/bar").expect(201),
+        "to be rejected with",
+        'expected 201 "Created", got 204 "No Content"'
+      );
+    });
+  });
 });
