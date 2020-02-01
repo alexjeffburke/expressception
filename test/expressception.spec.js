@@ -32,6 +32,19 @@ describe("expressception", () => {
     );
   });
 
+  it("should return an error if the response was destroyed", () => {
+    const middleware = (req, res) => {
+      res.destroy();
+    };
+    const agent = expressception(middleware).superagent();
+
+    return expect(
+      run => agent.post("/foo/bar").end(run),
+      "to call the callback with error",
+      "destroyed"
+    );
+  });
+
   describe("with superagent api", () => {
     expect.addAssertion(
       "<object> to end with status code <number>",
