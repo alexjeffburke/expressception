@@ -89,18 +89,6 @@ describe("expressception", () => {
       );
     });
 
-    it("should fail on mismatched status code", () => {
-      const agent = expressception((req, res) => {
-        res.status(204).send();
-      }).superagent();
-
-      return expect(
-        () => expect(agent.post("/foo/bar"), "to end with status code", 201),
-        "to be rejected with",
-        "Mismatching status code."
-      );
-    });
-
     it("should allow being used as a promise (then)", async () => {
       const agent = expressception((req, res) => {
         res.status(204).send();
@@ -121,6 +109,44 @@ describe("expressception", () => {
       });
 
       return expect(res.status, "to equal", 204);
+    });
+
+    it('should allow retrieving "status"', async () => {
+      const agent = expressception((req, res) => {
+        res.status(201).send({});
+      }).superagent();
+
+      const res = await agent.post("/foo/bar");
+
+      return expect(res.status, "to equal", 201);
+    });
+
+    it('should allow retrieving "header"', async () => {
+      const agent = expressception((req, res) => {
+        res.status(201).send({});
+      }).superagent();
+
+      const res = await agent.post("/foo/bar");
+
+      return expect(
+        res.header["content-type"],
+        "to match",
+        /application\/json/
+      );
+    });
+
+    it('should allow retrieving "headers"', async () => {
+      const agent = expressception((req, res) => {
+        res.status(201).send({});
+      }).superagent();
+
+      const res = await agent.post("/foo/bar");
+
+      return expect(
+        res.headers["content-type"],
+        "to match",
+        /application\/json/
+      );
     });
   });
 });
