@@ -148,6 +148,26 @@ describe("expressception", () => {
         /application\/json/
       );
     });
+
+    it('should allow retrieving "body"', async () => {
+      const agent = expressception((req, res) => {
+        res.status(200).send({});
+      }).superagent();
+
+      const res = await agent.post("/foo/bar");
+
+      return expect(res.body, "to equal", {});
+    });
+
+    it('should allow retrieving "text"', async () => {
+      const agent = expressception((req, res) => {
+        res.status(200).send("Hello");
+      }).superagent();
+
+      const res = await agent.get("/");
+
+      return expect(res.text, "to equal", "Hello");
+    });
   });
 
   describe("with supertest api", () => {
