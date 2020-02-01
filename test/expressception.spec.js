@@ -124,6 +124,16 @@ describe("expressception", () => {
       return expect(res.status, "to equal", 204);
     });
 
+    it("should allow chaining through redirects", async () => {
+      const agent = expressception((req, res) => {
+        res.status(200).send();
+      }).superagent();
+
+      const res = await agent.get("/").redirects();
+
+      return expect(res.status, "to equal", 200);
+    });
+
     it('should allow retrieving "status"', async () => {
       const agent = expressception((req, res) => {
         res.status(201).send({});
@@ -180,6 +190,22 @@ describe("expressception", () => {
       const res = await agent.get("/");
 
       return expect(res.text, "to equal", "Hello");
+    });
+
+    describe("with options that are not supported", () => {
+      it("should error if redirects(>0)", async () => {
+        const agent = expressception((req, res) => {
+          res.status(200).send();
+        }).superagent();
+
+        return expect(
+          () => {
+            agent.get("/").redirects(1);
+          },
+          "to throw",
+          "redirects(value) with a value > 0 is not implemented"
+        );
+      });
     });
   });
 
