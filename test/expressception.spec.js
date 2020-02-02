@@ -59,6 +59,7 @@ describe("expressception", () => {
           });
         });
 
+        expect.errorMode = "bubble";
         return expect(p, "to be fulfilled").then(res => {
           if (res.status !== statusCode) {
             throw new Error("Mismatching status code.");
