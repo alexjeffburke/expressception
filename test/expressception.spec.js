@@ -124,6 +124,23 @@ describe("expressception", () => {
       return expect(res.status, "to equal", 204);
     });
 
+    it("should allow chaining through set()", async () => {
+      const agent = expressception((req, res) => {
+        res
+          .status(req.headers["content-type"] === "text/plain" ? 200 : 400)
+          .send();
+      }).superagent();
+
+      const res = await agent
+        .get("/")
+        .set("content-type", "text/plain")
+        .query({
+          foo: "bar"
+        });
+
+      return expect(res.status, "to equal", 200);
+    });
+
     it("should allow chaining through redirects", async () => {
       const agent = expressception((req, res) => {
         res.status(200).send();
