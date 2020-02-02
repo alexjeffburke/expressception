@@ -209,6 +209,18 @@ describe("expressception", () => {
       return expect(res.text, "to equal", "Hello");
     });
 
+    describe("methods", () => {
+      ["delete", "del", "get", "head", "post", "put"].forEach(method => {
+        it(`should allow ${method}()`, () => {
+          const agent = expressception((req, res) => {
+            res.status(200).send();
+          }).superagent();
+
+          return expect(agent[method]("/"), "to end with status code", 200);
+        });
+      });
+    });
+
     describe("with options that are not supported", () => {
       it("should error if redirects(>0)", async () => {
         const agent = expressception((req, res) => {
@@ -285,6 +297,18 @@ describe("expressception", () => {
         "to be rejected with",
         'expected 201 "Created", got 204 "No Content"'
       );
+    });
+
+    describe("methods", () => {
+      ["delete", "del", "get", "head", "post", "put"].forEach(method => {
+        it(`should allow ${method}()`, () => {
+          const agent = expressception((req, res) => {
+            res.status(200).send();
+          }).supertest();
+
+          return expect(agent[method]("/"), "to end with status code", 200);
+        });
+      });
     });
   });
 });
