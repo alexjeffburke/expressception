@@ -267,6 +267,24 @@ describe("expressception", () => {
         return expect(res.text, "to equal", "Login");
       });
     });
+
+    describe("timeout", () => {
+      it("should follow redirect", async () => {
+        const app = express();
+
+        app.get("/", function(req, res) {
+          setTimeout(() => {
+            res.send("delayed");
+          });
+        });
+
+        const agent = expressception(app).superagent();
+
+        return expect(agent.get("/").timeout(1), "to be rejected with", {
+          name: "TimeoutError"
+        });
+      });
+    });
   });
 
   describe("with supertest api", () => {
