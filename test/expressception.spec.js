@@ -1,5 +1,6 @@
 const expect = require("unexpected").clone();
 const express = require("express");
+const cookieParser = require("cookie-parser");
 
 const expressception = require("../lib/expressception");
 
@@ -219,6 +220,31 @@ describe("expressception", () => {
 
           return expect(agent[method]("/"), "to end with status code", 200);
         });
+      });
+    });
+
+    describe("cookies", () => {
+      it("should follow redirect", async () => {
+        const app = express().use(cookieParser());
+
+        app.get("/", function(req, res) {
+          res.cookie("cookie", "hey");
+          res.send();
+        });
+
+        app.get("/return_cookies", function(req, res) {
+          if (req.cookies.cookie) res.send(req.cookies.cookie);
+          else res.send(":(");
+        });
+
+        const agent = expressception(app)
+          .superagent()
+          .agent();
+
+        await agent.get("/");
+        const cookieRes = await agent.get("/return_cookies");
+
+        return expect(cookieRes.text, "to equal", "hey");
       });
     });
 
