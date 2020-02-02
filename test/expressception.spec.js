@@ -222,19 +222,23 @@ describe("expressception", () => {
       });
     });
 
-    describe("with options that are not supported", () => {
-      it("should error if redirects(>0)", async () => {
-        const agent = expressception((req, res) => {
-          res.status(200).send();
-        }).superagent();
+    describe("redirects", () => {
+      it("should follow redirect", async () => {
+        const app = express();
 
-        return expect(
-          () => {
-            agent.get("/").redirects(1);
-          },
-          "to throw",
-          "redirects(value) with a value > 0 is not implemented"
-        );
+        app.get("/login", function(req, res) {
+          res.end("Login");
+        });
+
+        app.get("/", function(req, res) {
+          res.redirect("/login");
+        });
+
+        const agent = expressception(app).superagent();
+
+        const res = await agent.get("/login").redirects(1);
+
+        return expect(res.text, "to equal", "Login");
       });
     });
   });
