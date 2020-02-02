@@ -262,7 +262,7 @@ describe("expressception", () => {
 
         const agent = expressception(app).superagent();
 
-        const res = await agent.get("/login").redirects(1);
+        const res = await agent.get("/").redirects(1);
 
         return expect(res.text, "to equal", "Login");
       });
