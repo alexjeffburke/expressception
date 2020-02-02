@@ -341,5 +341,32 @@ describe("expressception", () => {
         });
       });
     });
+
+    describe("cookies", () => {
+      it("should follow redirect", async () => {
+        const app = express().use(cookieParser());
+
+        app.get("/", function(req, res) {
+          res.cookie("cookie", "hey");
+          res.send();
+        });
+
+        app.get("/return_cookies", function(req, res) {
+          if (req.cookies.cookie) res.send(req.cookies.cookie);
+          else res.send(":(");
+        });
+
+        const agent = expressception(app)
+          .supertest()
+          .agent();
+
+        await agent.get("/");
+
+        return expect(
+          () => agent.get("/return_cookies").expect(200, "hey"),
+          "to be fulfilled"
+        );
+      });
+    });
   });
 });
