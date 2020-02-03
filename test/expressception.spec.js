@@ -269,6 +269,32 @@ describe("expressception", () => {
 
         return expect(cookieRes.text, "to equal", "hey");
       });
+
+      it("should combine cookies", async () => {
+        const app = express().use(cookieParser());
+
+        app.get("/", function(req, res) {
+          res.cookie("server", "yes");
+          res.send();
+        });
+
+        app.get("/return_cookies", function(req, res) {
+          const { client, server } = req.cookies;
+          if (server === "yes" && client === "yes") res.send("hey");
+          else res.send(":(");
+        });
+
+        const agent = expressception(app)
+          .superagent()
+          .agent();
+
+        await agent.get("/");
+        const cookieRes = await agent
+          .get("/return_cookies")
+          .set("cookie", "client=yes");
+
+        return expect(cookieRes.text, "to equal", "hey");
+      });
     });
 
     describe("redirects", () => {
