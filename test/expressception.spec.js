@@ -1,6 +1,9 @@
 const expect = require("unexpected").clone();
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const multer = require("multer");
+const path = require("path");
+const rimraf = require("rimraf");
 
 const expressception = require("../lib/expressception");
 
@@ -68,6 +71,26 @@ describe("expressception", () => {
         });
       }
     );
+
+    it("should support attach", () => {
+      const upload = multer({ dest: path.join(__dirname, "tmp") });
+      const app = express()
+        .use(upload.array("field"))
+        .post("/foo/bar", (req, res) => {
+          res.status(req.files.length > 0 ? 200 : 400).send();
+        });
+      const agent = expressception(app).superagent();
+
+      return expect(
+        agent
+          .post("/foo/bar")
+          .attach("field", Buffer.from("<b>Hello world</b>"), "hello.html"),
+        "to end with status code",
+        200
+      ).finally(() => {
+        rimraf.sync(path.join(__dirname, "tmp"));
+      });
+    });
 
     it("should support query", () => {
       const agent = expressception((req, res) => {
