@@ -397,6 +397,46 @@ describe("expressception", () => {
       );
     });
 
+    it("should handle a thrown error with statusCode", () => {
+      const error = new Error();
+      error.statusCode = 418;
+      const middleware = (req, res) => {
+        throw error;
+      };
+      const agent = expressception(middleware).supertest();
+
+      return expect(
+        () => agent.post("/foo/bar").expect(418),
+        "to be fulfilled"
+      );
+    });
+
+    it("should handle a thrown error with status", () => {
+      const error = new Error();
+      error.status = 418;
+      const middleware = (req, res) => {
+        throw error;
+      };
+      const agent = expressception(middleware).supertest();
+
+      return expect(
+        () => agent.post("/foo/bar").expect(418),
+        "to be fulfilled"
+      );
+    });
+
+    it("should handle a thrown error with no code", () => {
+      const middleware = (req, res) => {
+        throw new Error();
+      };
+      const agent = expressception(middleware).supertest();
+
+      return expect(
+        () => agent.post("/foo/bar").expect(500),
+        "to be fulfilled"
+      );
+    });
+
     describe("methods", () => {
       ["delete", "del", "get", "head", "post", "put"].forEach(method => {
         it(`should allow ${method}()`, () => {
