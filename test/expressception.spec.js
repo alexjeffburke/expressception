@@ -234,6 +234,22 @@ describe("expressception", () => {
       return expect(res.text, "to equal", "Hello");
     });
 
+    it("should permit default headers to be set", async () => {
+      const agent = expressception((req, res) => {
+        res.status(req.headers["x-foobar"] === "yes" ? 200 : 400).send();
+      }).superagent({
+        defaults: {
+          headers: {
+            "X-FooBar": "yes"
+          }
+        }
+      });
+
+      const res = await agent.get("/");
+
+      expect(res.statusCode, "to equal", 200);
+    });
+
     describe("methods", () => {
       ["delete", "del", "get", "head", "post", "put"].forEach(method => {
         it(`should allow ${method}()`, () => {
@@ -435,6 +451,22 @@ describe("expressception", () => {
         () => agent.post("/foo/bar").expect(500),
         "to be fulfilled"
       );
+    });
+
+    it("should permit default headers to be set", async () => {
+      const agent = expressception((req, res) => {
+        res.status(req.headers["x-foobar"] === "yes" ? 200 : 400).send();
+      }).supertest({
+        defaults: {
+          headers: {
+            "X-FooBar": "yes"
+          }
+        }
+      });
+
+      const res = await agent.get("/");
+
+      expect(res.statusCode, "to equal", 200);
     });
 
     describe("methods", () => {
