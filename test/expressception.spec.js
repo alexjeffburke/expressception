@@ -251,15 +251,17 @@ describe("expressception", () => {
     });
 
     describe("methods", () => {
-      ["delete", "del", "get", "head", "post", "put"].forEach(method => {
-        it(`should allow ${method}()`, () => {
-          const agent = expressception((req, res) => {
-            res.status(200).send();
-          }).superagent();
+      ["delete", "del", "get", "head", "patch", "post", "put"].forEach(
+        method => {
+          it(`should allow ${method}()`, () => {
+            const agent = expressception((req, res) => {
+              res.status(200).send();
+            }).superagent();
 
-          return expect(agent[method]("/"), "to end with status code", 200);
-        });
-      });
+            return expect(agent[method]("/"), "to end with status code", 200);
+          });
+        }
+      );
     });
 
     describe("cookies", () => {
@@ -470,15 +472,17 @@ describe("expressception", () => {
     });
 
     describe("methods", () => {
-      ["delete", "del", "get", "head", "post", "put"].forEach(method => {
-        it(`should allow ${method}()`, () => {
-          const agent = expressception((req, res) => {
-            res.status(200).send();
-          }).supertest();
+      ["delete", "del", "get", "head", "patch", "post", "put"].forEach(
+        method => {
+          it(`should allow ${method}()`, () => {
+            const agent = expressception((req, res) => {
+              res.status(200).send();
+            }).supertest();
 
-          return expect(agent[method]("/"), "to end with status code", 200);
-        });
-      });
+            return expect(agent[method]("/"), "to end with status code", 200);
+          });
+        }
+      );
     });
 
     describe("cookies", () => {
