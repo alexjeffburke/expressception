@@ -37,5 +37,8 @@
     "should": "^13.2.3",
     "supertest": "^4.0.2",
     "unexpected": "^11.12.1"
+  },
+  "dependencies": {
+    "unexpected-express": "^12.1.0"
   }
 }
