@@ -2,6 +2,10 @@
 
 Make requests against express handlers without a server.
 
+[![NPM version](https://img.shields.io/npm/v/expressception.svg)](https://www.npmjs.com/package/expressception)
+[![Build Status](https://img.shields.io/travis/alexjeffburke/expressception/master.svg)](https://travis-ci.org/alexjeffburke/expressception)
+[![Coverage Status](https://img.shields.io/coveralls/alexjeffburke/expressception/master.svg)](https://coveralls.io/r/alexjeffburke/expressception?branch=master)
+
 This module supports testing express handlers and middleware
 without having to start an HTTP server. Instead a runtime is
 provided which constructs request/response objects, calls the
