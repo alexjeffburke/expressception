@@ -1,6 +1,6 @@
 {
   "name": "expressception",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Make requests against express handlers without a server.",
   "main": "lib/expressception.js",
   "files": [
