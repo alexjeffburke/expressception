@@ -1,6 +1,6 @@
 # expressception
 
-Make requests against an express handlers without a server.
+Make requests against express handlers without a server.
 
 This module supports testing express handlers and middleware
 without having to start an HTTP server. Instead a runtime is
