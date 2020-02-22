@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "description": "Make requests against express handlers without a server.",
   "main": "lib/expressception.js",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "coverage": "nyc --reporter lcov --reporter text mocha",
     "lint": "eslint . && prettier --check '**/*.js'",
